@@ -10,6 +10,8 @@ module.exports.login = async (req, res, next) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return res.json({ msg: "Incorrect Username or Password", status: false });
+    
+    await User.updateOne({ _id: user._id }, { $set: { status: 'online' } });
     delete user.password;
     return res.json({ status: true, user });
   } catch (ex) {
@@ -31,6 +33,7 @@ module.exports.register = async (req, res, next) => {
       email,
       username,
       password: hashedPassword,
+      status:"online",
     });
     delete user.password;
     return res.json({ status: true, user });
@@ -46,6 +49,7 @@ module.exports.getAllUsers = async (req, res, next) => {
       "username",
       "avatarImage",
       "_id",
+      "status",
     ]);
     return res.json(users);
   } catch (ex) {
