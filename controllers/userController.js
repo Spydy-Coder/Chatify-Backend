@@ -78,9 +78,10 @@ module.exports.setAvatar = async (req, res, next) => {
   }
 };
 
-module.exports.logOut = (req, res, next) => {
+module.exports.logOut = async (req, res, next) => {
   try {
     if (!req.params.id) return res.json({ msg: "User id is required " });
+    await User.updateOne({ _id: req.params.id }, { $set: { status: 'offline' } });
     onlineUsers.delete(req.params.id);
     return res.status(200).send();
   } catch (ex) {
